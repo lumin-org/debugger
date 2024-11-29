@@ -1,13 +1,8 @@
 # Mkdocs
 venv
 
-# Node
-node_modules
+# Pesde
+pesde.lock
 
-# Wally
-Packages
-DevPackages
-wally.lock
-
-# Argon
+# Rojo
 sourcemap.json

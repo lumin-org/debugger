@@ -1,15 +1,17 @@
 {
-	"legacyScripts": false,
+	"emitLegacyScripts": true,
 	"name": "debugger",
 	"tree": {
 		"$className": "DataModel",
 		"ReplicatedStorage": {
 			"Packages": {
-				"debugger": {
+                "$className": "Folder",
+				"src": {
 					"$path": "src"
 				}
 			},
 			"Tests": {
+                "$className": "Folder",
                 "Client": {
 				    "$path": "tests/client"
                 },
