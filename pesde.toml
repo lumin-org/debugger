@@ -1,5 +1,5 @@
 name = "lumin/debugger"
-version = "0.5.0"
+version = "0.6.0"
 description = "A customizable and extendable debugger for open source software"
 authors = ["jmesrje"]
 repository = "https://github.com/lumin-org/debugger"
@@ -14,7 +14,7 @@ includes = [
 [target]
 environment = "roblox"
 lib = "src/init.luau"
-build_files = ["src/**"]
+build_files = ["src"]
 
 [dev_dependencies]
 scripts = { name = "pesde/scripts_rojo", version = "^0.1.0", target = "lune" }
