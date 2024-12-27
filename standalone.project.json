@@ -1,8 +1,8 @@
 {
-    "name": "standalone",
+    "name": "debugger",
     "tree": {
-        "$path": "Packages",
-        "debugger": {
+        "$className": "Folder",
+        "src": {
             "$path": "src"
         }
     }

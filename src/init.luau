@@ -3,12 +3,12 @@
 local RunService = game:GetService("RunService")
 local PackageLinksAllowed = RunService:IsStudio()
 
-local Types = require(script.Types)
+local Types = require(script.types)
 
 local LogList = nil
 local Metadata = {
-	PackageURL = "",
-	PackageName = "Package",
+	URL = "",
+	Name = "Package",
     TraceLevel = 3,
 }
 
@@ -17,11 +17,11 @@ local Metadata = {
 --[=[
 	Sets specific metadata for formatting; such as a custom web link or package name.
 
-	[Learn More](https://luminlabsdev.github.io/debugger/api/#setmetadata)
+	[Open Documentation](https://lumin-org.github.io/debugger/api/#setmetadata)
 ]=]
 local function SetMetadata(metadata: { [string]: any })
 	for key, value in metadata do
-		if key == "PackageURL" and not PackageLinksAllowed then
+		if key == "URL" and not PackageLinksAllowed then
 			continue
 		end
 		Metadata[key] = value
@@ -31,7 +31,7 @@ end
 --[=[
 	Sets a list of logs to be referenced within formatters.
 
-	[Learn More](https://luminlabsdev.github.io/debugger/api/#setlogs)
+	[Open Documentation](https://lumin-org.github.io/debugger/api/#setlogs)
 ]=]
 local function SetLogs(logList: { [string]: string })
 	LogList = logList
@@ -40,14 +40,14 @@ end
 --[=[
 	Base formatter for all debug functions, returns a formatted string with extra info.
 
-	[Learn More](https://luminlabsdev.github.io/debugger/api/#format)
+	[Open Documentation](https://lumin-org.github.io/debugger/api/#format)
 ]=]
 local function Format(logId: string, trace: string, ...: any): string
 	assert(LogList[logId], "Invalid log ID")
     local FormattedLog = string.format(LogList[logId] or "Unknown", ...)
 	return (string.gsub(
-		`[{Metadata.PackageName}] {FormattedLog}{if Metadata.PackageURL ~= ""
-			then `\nLearn: {Metadata.PackageURL}`
+		`[{Metadata.Name}] {FormattedLog}{if Metadata.URL ~= ""
+			then `\nLearn: {Metadata.URL}`
 			else ""}\nTrace: {(string.gsub(trace, "\n", ""))}`,
 		"\n",
 		"\n\t\t\t\t"
@@ -57,7 +57,7 @@ end
 --[=[
 	Formats a fatal error of a log ID with provided parameters.
 
-	[Learn More](https://luminlabsdev.github.io/debugger/api/#fatal)
+	[Open Documentation](https://lumin-org.github.io/debugger/api/#fatal)
 ]=]
 local function Fatal(logId: string, ...: any): never
 	error(Format(logId,	debug.traceback(nil, Metadata.TraceLevel), ...), 0)
@@ -66,7 +66,7 @@ end
 --[=[
 	Formats a warning of a log ID with provided parameters.
 
-	[Learn More](https://luminlabsdev.github.io/debugger/api/#warn)
+	[Open Documentation](https://lumin-org.github.io/debugger/api/#warn)
 ]=]
 local function Warn(logId: string, ...: any)
 	warn(Format(logId, debug.traceback(nil, Metadata.TraceLevel), ...))
@@ -75,7 +75,7 @@ end
 --[=[
 	Returns the provided condition if it is true, behaves as the regular assert.
 
-	[Learn More](https://luminlabsdev.github.io/debugger/api/#assert)
+	[Open Documentation](https://lumin-org.github.io/debugger/api/#assert)
 ]=]
 local function Assert<T>(condition: T, logId: string, ...: any): T
 	if not condition then
@@ -87,7 +87,7 @@ end
 --[=[
 	Extracts info from xpcall errors to beautify it.
 
-	[Learn More](https://luminlabsdev.github.io/debugger/api/#parse)
+	[Open Documentation](https://lumin-org.github.io/debugger/api/#parse)
 ]=]
 local function Parse(error: string): Types.ParsedError
 	return {

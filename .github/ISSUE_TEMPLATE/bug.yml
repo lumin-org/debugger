@@ -5,10 +5,10 @@ body:
   - type: checkboxes
     id: check
     attributes:
-      label: Original Issue
+      label: Original
       description: Be sure that a change related to this issue isn't already pending, and a similar issue does not exist.
       options:
-        - label: Original
+        - label: My issue is original
           required: true
   - type: textarea
     id: description

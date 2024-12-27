@@ -1,7 +1,8 @@
-# Mkdocs
-venv
-
 # Pesde
+.pesde
+roblox_packages
+lune_packages
+luau_packages
 pesde.lock
 
 # Rojo

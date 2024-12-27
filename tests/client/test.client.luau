@@ -1,9 +1,9 @@
-local Debugger = require(game.ReplicatedStorage.Packages.debugger)
+local Debugger = require(game.ReplicatedStorage.debugger.src)
 local TestModule = require(script.Parent.testmodule)
 
 Debugger.SetMetadata({
-    PackageURL = "https://lumin-dev.github.io/LuminFramework/",
-    PackageName = "Lumin Framework",
+    PackageURL = "https://lumin-org.github.io/framework/",
+    PackageName = "Framework",
     TraceLevel = 2,
 })
 
