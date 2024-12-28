@@ -15,17 +15,27 @@ In order to use **lumin/debugger** you must have the following dependencies inst
 
 ## Usage
 
-Basic usage of a few of the debugger functions.
+How you can use `Parse` to create custom errors.
 
 ```luau
 local Debugger = require(path.to.debugger)
 local Logs = {
-    "MyLog" = "This is a very %s log!"
+    "Whoops" = "Something bad happened!: %s"
 }
 
-Debugger.SetLogs(Logs)
-Debugger.Warn("MyLog", "bad")
-Debugger.Fatal("MyLog", "cool")
+Debugger.SetMetadata(Logs, {
+    Name = "Cool Package",
+    URL = "https://example.com/",
+    Trace = true,
+})
+
+local Result, Err: Debugger.ParsedError = xpcall(function()
+    error("This is an error...")
+end, Debugger.Parse)
+
+if not Result then
+    Debugger.Fatal("Whoops", Err.Message) -- Output: Something bad happened!: This is an error...
+end
 ```
 
 # License
