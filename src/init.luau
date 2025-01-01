@@ -5,9 +5,10 @@ local LinksAllowed = RunService:IsStudio()
 
 local Types = require(script.types)
 
-local LogList = nil
 local LogBase = "[%s] %s%s%s"
-local Metadata = {
+local Data = {
+	URL = nil,
+	Logs = nil,
 	Name = "Package",
 	Trace = true,
 }
@@ -20,13 +21,12 @@ local Metadata = {
 
 	[Open Documentation](https://lumin-org.github.io/debugger/api/#setmetadata)
 ]=]
-local function SetMetadata(logs: { [string]: string }, metadata: { [string]: any })
-	LogList = logs
-	for key, value in metadata do
+local function set(data: { [string]: any })
+	for key, value in data do
 		if key == "URL" and not LinksAllowed then
 			continue
 		end
-		Metadata[key] = value
+		Data[key] = value
 	end
 end
 
@@ -35,13 +35,14 @@ end
 
 	[Open Documentation](https://lumin-org.github.io/debugger/api/#format)
 ]=]
-local function Format(logId: string, trace: string, ...: any): string
-	assert(LogList[logId], "Invalid log ID")
+local function format(logId: string, trace: string, ...: any): string
+	assert(Data.Logs, "Must have log list")
+	assert(Data.Logs[logId], "Invalid log ID")
 	local Formatted = LogBase:format(
-		Metadata.Name, -- Package name
-		LogList[logId]:format(...), -- Formatted log details
-		if Metadata.URL then `\nLearn: {Metadata.URL}{logId}` else "", -- Learn URL
-		if Metadata.Trace then `\nTrace: {trace}` else "" -- Traceback
+		Data.Name, -- Package name
+		(Data.Logs[logId] :: string):format(...), -- Formatted log details
+		if Data.URL then `\nLearn: {Data.URL}{logId:lower()}` else "", -- Learn URL
+		if Data.Trace then `\nTrace: {trace}` else "" -- Traceback
 	):gsub("\n", "\n\t\t\t\t")
 	return Formatted
 end
@@ -51,8 +52,8 @@ end
 
 	[Open Documentation](https://lumin-org.github.io/debugger/api/#fatal)
 ]=]
-local function Fatal(logId: string, ...: any): never
-	error(Format(logId, debug.traceback(nil, 2), ...), 0)
+local function fatal(logId: string, ...: any): never
+	error(format(logId, debug.traceback(nil, 2), ...), 0)
 end
 
 --[=[
@@ -60,8 +61,8 @@ end
 
 	[Open Documentation](https://lumin-org.github.io/debugger/api/#warn)
 ]=]
-local function Warn(logId: string, ...: any)
-	warn(Format(logId, debug.traceback(nil, 2), ...))
+local function warn(logId: string, ...: any)
+	warn(format(logId, debug.traceback(nil, 2), ...))
 end
 
 --[=[
@@ -69,9 +70,9 @@ end
 
 	[Open Documentation](https://lumin-org.github.io/debugger/api/#assert)
 ]=]
-local function Assert<T>(condition: T, logId: string, ...: any): T
+local function assert<T>(condition: T, logId: string, trace: string?, ...: any): T
 	if not condition then
-		Fatal(logId, ...)
+		error(format(logId, debug.traceback(nil, 3), ...), 0)
 	end
 	return condition
 end
@@ -81,7 +82,7 @@ end
 
 	[Open Documentation](https://lumin-org.github.io/debugger/api/#parse)
 ]=]
-local function Parse(error: string): Types.ParsedError
+local function parse(error: string): Types.ParsedError
 	return {
 		Raw = error,
 		Message = error:gsub("^.+:%d+:%s*", ""),
@@ -96,10 +97,9 @@ export type ParsedError = Types.ParsedError
 -- Module
 
 return table.freeze({
-	SetMetadata = SetMetadata,
-	Format = Format,
-	Fatal = Fatal,
-	Warn = Warn,
-	Assert = Assert,
-	Parse = Parse,
+	set = set,
+	fatal = fatal,
+	warn = warn,
+	assert = assert,
+	parse = parse,
 })
