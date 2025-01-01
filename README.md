@@ -23,7 +23,8 @@ local Logs = {
     "Whoops" = "Something bad happened!: %s"
 }
 
-Debugger.SetMetadata(Logs, {
+Debugger.set({
+    Logs = Logs,
     Name = "Cool Package",
     URL = "https://example.com/",
     Trace = true,
@@ -31,10 +32,10 @@ Debugger.SetMetadata(Logs, {
 
 local Result, Err: Debugger.ParsedError = xpcall(function()
     error("This is an error...")
-end, Debugger.Parse)
+end, Debugger.parse)
 
 if not Result then
-    Debugger.Fatal("Whoops", Err.Message) -- Output: Something bad happened!: This is an error...
+    Debugger.fatal("Whoops", Err.Message) -- Output: Something bad happened!: This is an error...
 end
 ```
 
