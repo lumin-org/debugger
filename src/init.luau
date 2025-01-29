@@ -70,7 +70,7 @@ end
 
 	[Open Documentation](https://lumin-org.github.io/debugger/api/#assert)
 ]=]
-local function assert<T>(condition: T, logId: string, trace: string?, ...: any): T
+local function assert<T>(condition: T, logId: string, ...: any): T
 	if not condition then
 		error(format(logId, debug.traceback(nil, 3), ...), 0)
 	end
