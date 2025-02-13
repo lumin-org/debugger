@@ -43,7 +43,6 @@ jobs:
               content: ${{ steps.get-version.outputs.VERSION }}
               files: |
                 pesde.toml
-                package.json
 
           - name: Commit and push
             uses: EndBug/add-and-commit@v9
