@@ -10,12 +10,12 @@ A customizable and extendable debugger for open source software.
 
 In order to use **lumin/debugger** you must have the following dependencies installed:
 
-* [`pesde@^0.5.2`](https://github.com/pesde-pkg/pesde)
+* [`pesde@^0.6.0-rc6`](https://github.com/pesde-pkg/pesde)
 * [`rojo@^7.4.4`](https://github.com/rojo-rbx/rojo)
 
 ## Usage
 
-How you can use `Parse` to create custom errors.
+How you can use `parse` to create custom errors.
 
 ```luau
 local Debugger = require(path.to.debugger)
@@ -23,19 +23,14 @@ local Logs = {
     "Whoops" = "Something bad happened!: %s"
 }
 
-Debugger.set({
-    Logs = Logs,
-    Name = "Cool Package",
-    URL = "https://example.com/",
-    Trace = true,
-})
+Debugger.set("Cool Package", Logs)
 
-local Result, Err: Debugger.ParsedError = xpcall(function()
+local Result, Err: Debugger.Parsed = xpcall(function()
     error("This is an error...")
 end, Debugger.parse)
 
 if not Result then
-    Debugger.fatal("Whoops", Err.Message) -- Output: Something bad happened!: This is an error...
+    Debugger.fatal("Whoops", Err.message) -- Output: Something bad happened!: This is an error...
 end
 ```
 

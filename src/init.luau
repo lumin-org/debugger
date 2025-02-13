@@ -1,105 +1,68 @@
 -- Variables
 
-local RunService = game:GetService("RunService")
-local LinksAllowed = RunService:IsStudio()
-
-local Types = require(script.types)
-
-local LogBase = "[%s] %s%s%s"
+local Base = "[%s] %s%s%s"
+local luauwarn = warn
 local Data = {
-	URL = nil,
 	Logs = nil,
 	Name = "Package",
-	Trace = true,
 }
 
 -- Functions
 
---[=[
-	Sets logger metadata that is referenced within each log, along with the setting the
-    logs themselves.
-
-	[Open Documentation](https://lumin-org.github.io/debugger/api/#setmetadata)
-]=]
-local function set(data: { [string]: any })
-	for key, value in data do
-		if key == "URL" and not LinksAllowed then
-			continue
-		end
-		Data[key] = value
-	end
-end
-
---[=[
-	Base formatter for all debug functions, returns a formatted string with extra info.
-
-	[Open Documentation](https://lumin-org.github.io/debugger/api/#format)
-]=]
-local function format(logId: string, trace: string, ...: any): string
+local function format(id: string, trace: string, ...: any): string
 	assert(Data.Logs, "Must have log list")
-	assert(Data.Logs[logId], "Invalid log ID")
-	local Formatted = LogBase:format(
-		Data.Name, -- Package name
-		(Data.Logs[logId] :: string):format(...), -- Formatted log details
-		if Data.URL then `\nLearn: {Data.URL}{logId:lower()}` else "", -- Learn URL
-		if Data.Trace then `\nTrace: {trace}` else "" -- Traceback
+	assert(Data.Logs[id], `Invalid log ID: {id}`)
+	local Formatted = Base:format(
+		Data.Name,
+        `{id}\n`,
+		(Data.Logs[id] :: string):format(...),
+		`\n---- Trace ----\n{trace}` 
 	):gsub("\n", "\n\t\t\t\t")
-	return Formatted
+    return Formatted
 end
 
---[=[
-	Formats a fatal error of a log ID with provided parameters.
-
-	[Open Documentation](https://lumin-org.github.io/debugger/api/#fatal)
-]=]
-local function fatal(logId: string, ...: any): never
-	error(format(logId, debug.traceback(nil, 2), ...), 0)
+local function warn(id: string, ...: any)
+	luauwarn(format(id, debug.traceback(nil, 2), ...))
 end
 
---[=[
-	Formats a warning of a log ID with provided parameters.
-
-	[Open Documentation](https://lumin-org.github.io/debugger/api/#warn)
-]=]
-local function warn(logId: string, ...: any)
-	warn(format(logId, debug.traceback(nil, 2), ...))
-end
-
---[=[
-	Returns the provided condition if it is true, behaves as the regular assert.
-
-	[Open Documentation](https://lumin-org.github.io/debugger/api/#assert)
-]=]
-local function assert<T>(condition: T, logId: string, ...: any): T
-	if not condition then
-		error(format(logId, debug.traceback(nil, 3), ...), 0)
+local function assert<T>(assertion: T, id: string, ...: any): T
+	if not assertion then
+		error(format(id, debug.traceback(nil, 2), ...), 0)
 	end
-	return condition
+	return assertion
 end
 
---[=[
-	Extracts info from xpcall errors to beautify it.
+local function fatal(id: string, ...: any): never
+	error(format(id, debug.traceback(nil, 2), ...), 0)
+end
 
-	[Open Documentation](https://lumin-org.github.io/debugger/api/#parse)
-]=]
-local function parse(error: string): Types.ParsedError
+local function parse(error: string): Parsed
 	return {
-		Raw = error,
-		Message = error:gsub("^.+:%d+:%s*", ""),
-		Trace = debug.traceback(nil, 2),
+		raw = error,
+		message = error:gsub("^.+:%d+:%s*", ""),
+		trace = debug.traceback(nil, 2),
 	}
+end
+
+local function set(name: string, logs: {[string]: string})
+    Data.Name = name :: any
+    Data.Logs = logs :: any
 end
 
 -- Types
 
-export type ParsedError = Types.ParsedError
+export type Parsed = {
+	raw: string,
+	message: string,
+	trace: string,
+}
 
 -- Module
 
 return table.freeze({
-	set = set,
-	fatal = fatal,
-	warn = warn,
-	assert = assert,
-	parse = parse,
+    set = set,
+    warn = warn,
+    assert = assert,
+    fatal = fatal,
+    parse = parse,
 })
