@@ -73,17 +73,6 @@ jobs:
         steps:
         - uses: actions/checkout@v4
 
-        - name: Setup Pesde
-          uses: lumin-org/setup-pesde@v0.4.0
-          with:
-            version: 'v0.6.0-rc.6+registry.0.2.0-rc.2'
-            cache: true
-            token: '${{ secrets.PESDE_TOKEN }}'
-
-        - name: Install dependencies
-          run: |
-            pesde install
-
         - name: Get normal version
           id: get-version
           run: |
@@ -99,6 +88,17 @@ jobs:
             content: ${{ steps.get-version.outputs.VERSION }}
             files: |
               pesde.toml
+
+        - name: Setup Pesde
+          uses: lumin-org/setup-pesde@v0.4.0
+          with:
+            version: 'v0.6.0-rc.6+registry.0.2.0-rc.2'
+            cache: true
+            token: '${{ secrets.PESDE_TOKEN }}'
+
+        - name: Install dependencies
+          run: |
+            pesde install
 
         - name: Publish packages
           run: |
