@@ -4,6 +4,7 @@ local Base = "[%s] %s%s%s"
 local luauwarn = warn
 local Data = {
 	Logs = nil,
+    URL = nil,
 	Name = "Package",
 }
 
@@ -13,9 +14,9 @@ local function format(id: string, trace: string, ...: any): string
 	assert(Data.Logs, "Must have log list")
 	assert(Data.Logs[id], `Invalid log ID: {id}`)
 	local Formatted = Base:format(
-		Data.Name,
-        `{id}\n`,
-		(Data.Logs[id] :: string):format(...),
+		if Data.Name then Data.Name else "?",
+        (Data.Logs[id] :: string):format(...),
+		if Data.URL then `\nLearn more: {Data.URL}#{id:lower()}` else "",
 		`\n---- Trace ----\n{trace}` 
 	):gsub("\n", "\n\t\t\t\t")
     return Formatted
@@ -44,7 +45,10 @@ local function parse(error: string): Parsed
 	}
 end
 
-local function set(name: string, logs: {[string]: string})
+local function set(name: string, logs: {[string]: string}, url: string?)
+    if game:GetService("RunService"):IsStudio() and url then
+        Data.URL = url :: any
+    end
     Data.Name = name :: any
     Data.Logs = logs :: any
 end
